@@ -3,6 +3,10 @@
 
 #include "StompBox.h"
 
+/*
+ * Rössler attractor
+ * http://en.wikipedia.org/wiki/R%C3%B6ssler_attractor
+ */
 class RosslerAttractorPatch : public Patch {
 public:
   double x,y,z;

@@ -19,8 +19,9 @@ public:
   double b = 0.3;
 
   HenonMapPatch(){
-    registerParameter(PARAMETER_A, "Alpha");
-    registerParameter(PARAMETER_B, "Beta");
+    registerParameter(PARAMETER_A, "Rate");
+    registerParameter(PARAMETER_B, "Alpha");
+    registerParameter(PARAMETER_C, "Beta");
     registerParameter(PARAMETER_D, "Gain");
     reset();
   }

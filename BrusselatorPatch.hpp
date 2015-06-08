@@ -42,7 +42,7 @@ public:
     b = getParameterValue(PARAMETER_B)*3+1;
     float xgain = getParameterValue(PARAMETER_C)*0.1;
     float ygain = getParameterValue(PARAMETER_D)*2;
-    ASSERT(buffer.getChannels() == 2, "Patch requires stereo out");
+    ASSERT(buffer.getChannels() == 2, "Stereo patch");
     for(int i=0; i<size; i+=2){
       left[i] = xr * xgain;
       right[i] = yr * ygain;

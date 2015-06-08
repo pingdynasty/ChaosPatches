@@ -3,6 +3,10 @@
 
 #include "StompBox.h"
 
+/*
+ * The Lorenz attractor is a set of chaotic solutions of the Lorenz system.
+ * http://en.wikipedia.org/wiki/Lorenz_system
+ */
 class LorenzAttractorPatch : public Patch {
 public:
   double x, y, z, dt;
