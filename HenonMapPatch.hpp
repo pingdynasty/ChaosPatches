@@ -83,10 +83,10 @@ public:
     float step = getParameterValue(PARAMETER_A)*getParameterValue(PARAMETER_A)*0.3;
     for(int i=0; i<size; i++){
       left[i] = y[0]*gain;
+      // right[i] = (y[0]*incr + y[1]*(1-incr))*gain;
       // right[i] = cosineInterpolate(y[0], y[1], incr)*gain;
       // right[i] = cubicInterpolate(y[0], y[1], y[2], y[3], incr)*gain;
       right[i] = splineInterpolate(y[0], y[1], y[2], y[3], incr)*gain;
-      right[i] = (y[0]*incr + y[1]*(1-incr))*gain;
       incr += step;
       if(incr > 1.0){
 	iterate();
