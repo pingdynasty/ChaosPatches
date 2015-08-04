@@ -10,11 +10,10 @@
 class RosslerAttractorPatch : public Patch {
 public:
   double x,y,z;
-  double a = .1;
-  double b = .1;
+  const double a = .1;
+  const double b = .1;
   double c = 18;
-
-  double dt = 0.01;
+  float dt;
 
   RosslerAttractorPatch(){
     registerParameter(PARAMETER_A, "Rate");
@@ -45,7 +44,7 @@ public:
   void processAudio(AudioBuffer &buffer){
     if(isButtonPressed(PUSHBUTTON))
       reset();
-    dt = getParameterValue(PARAMETER_A)*getParameterValue(PARAMETER_A)*0.002;
+    dt = getParameterValue(PARAMETER_A)*getParameterValue(PARAMETER_A)*0.065;
     c = getParameterValue(PARAMETER_B)*14.0+4.0;
     double gainL = getParameterValue(PARAMETER_C)*2.0/25.0;
     double gainR = getParameterValue(PARAMETER_D)*2.0/25.0;
@@ -65,7 +64,8 @@ public:
       left[i] = x * gainL;
       right[i] = y * gainR;
     }
-    // debugMessage("x/y/z", x, y, z);
+    // debugMessage("x/y/z", (float)x, (float)y, (float)z);
+    // debugMessage("dt", (float)dt);
   }
 
 };

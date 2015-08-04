@@ -9,10 +9,11 @@
  */
 class LorenzAttractorPatch : public Patch {
 public:
-  double x, y, z, dt;
-  double a = 10.0;
-  double b = 8.0/3.0;
-  double c = 28.0;
+  double x, y, z;
+  float dt;
+  const double a = 10.0;
+  const double b = 8.0/3.0;
+  const double c = 28.0;
 
   LorenzAttractorPatch(){
     registerParameter(PARAMETER_A, "Rate");
@@ -30,7 +31,7 @@ public:
   void processAudio(AudioBuffer &buffer){
     if(isButtonPressed(PUSHBUTTON))
       reset();
-    dt = getParameterValue(PARAMETER_A)*getParameterValue(PARAMETER_A)*0.0004;
+    dt = getParameterValue(PARAMETER_A)*getParameterValue(PARAMETER_A)*0.0250;
     double gainL = getParameterValue(PARAMETER_C)*2/25.0;
     double gainR = getParameterValue(PARAMETER_D)*2/25.0;
     int size = buffer.getSize();
@@ -47,6 +48,7 @@ public:
       left[i] = x * gainL;
       right[i] = y * gainR;
     }
+    // debugMessage("x/y/z", (float)x, (float)y, (float)z);
   }
 
 };

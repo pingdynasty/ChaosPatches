@@ -34,12 +34,16 @@ public:
     y[3] = 0;
   }
 
-  float calc(float yn1, float yn2){
+  /*
+   * Difference equation for the Henon map
+   * ref: http://peabody.sapp.org/class/dmp2/lab/henon/
+   */
+  float diff(float yn1, float yn2){
     return a * yn1*yn1 + b * yn2 + 1;
   }
 
   void iterate(){
-    float yn = calc(y[0], y[1]);
+    float yn = diff(y[0], y[1]);
     y[3] = y[2];
     y[2] = y[1];
     y[1] = y[0];
@@ -50,7 +54,7 @@ public:
   void processAudio(AudioBuffer &buffer){
     if(isButtonPressed(PUSHBUTTON))
       reset();
-    float step = getParameterValue(PARAMETER_A)*getParameterValue(PARAMETER_A)*maxRate + minRate;
+    float step = getParameterValue(PARAMETER_A)*getParameterValue(PARAMETER_A)*(maxRate-minRate) + minRate;
     a = getParameterValue(PARAMETER_B)*-0.4 - 1.2;
     b = getParameterValue(PARAMETER_C)*0.45 - 0.26;
     float gain = getParameterValue(PARAMETER_D)*2.0;

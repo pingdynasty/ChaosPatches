@@ -4,80 +4,83 @@
 #include "StompBox.h"
 
 /*
+ * The Lotka Volterra model is a pair of differential equations that describe
+ * two interacting species, one as prey, the other as predator (Rabbits and Foxes).
+ * The left and right input values affect the current population levels, as does 
+ * the birth and death rates of the two species. 
+ * Rabbits on the left channel, Foxes on the right.
+ * Time: Rate of change
+ * Migration: The amount that the population is affected by external input
+ * Rabbit/Fox +: Birth rate for prey / predator
+ * Rabbit/Fox -: Death rate for prey / predator
  * http://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equation
  * http://www.tiem.utk.edu/~gross/bioed/bealsmodules/predator-prey.html
  * http://www.r-bloggers.com/lotka-volterra-model%C2%A0%C2%A0intro/
  */
-
 class LotkaVolterraPatch : public Patch {
 private:
-  float a = 0.4;   // Rabbit growth
-  float b = 0.002; // Rabbit death
-  float c = 0.002; // Fox growth
-  float d = 0.9;   // Fox death
-
+  const float minpop = 20.0;// minimum population
+  float a = 0.4;            // Rabbit growth
+  float b = 0.002;          // Rabbit death
+  float c = 0.002;          // Fox growth
+  float d = 0.9;            // Fox death
   float step = 0.1;
-  float x0;
-  float y0;
+  float migration = 10.0;
+  float x, y;
 
 public:
   LotkaVolterraPatch(){
-    // registerParameter(PARAMETER_A, "Rate");
-    // registerParameter(PARAMETER_B, "Rabbit/Fox -");
-    // registerParameter(PARAMETER_C, "Rabbit/Fox +");
-    registerParameter(PARAMETER_A, "Rabbit +");
-    registerParameter(PARAMETER_B, "Rabbit -");
-    registerParameter(PARAMETER_C, "Fox +");
-    registerParameter(PARAMETER_D, "Fox -");
+    registerParameter(PARAMETER_A, "Time");
+    registerParameter(PARAMETER_B, "Migration");
+    registerParameter(PARAMETER_C, "Rabbit/Fox +");
+    registerParameter(PARAMETER_D, "Rabbit/Fox -");
+    // registerParameter(PARAMETER_A, "Rabbit +");
+    // registerParameter(PARAMETER_B, "Rabbit -");
+    // registerParameter(PARAMETER_C, "Fox +");
+    // registerParameter(PARAMETER_D, "Fox -");
     reset();
   }
 
   void reset(){
-    x0 = (1-0.2)*1000;
-    y0 = 0.2*1000;
+    x = (1-0.2)*1000;
+    y = 0.2*1000;
     setButton(PUSHBUTTON, false);
   }
 
   void processAudio(AudioBuffer &buffer){
-    // a = getParameterValue(PARAMETER_C)*0.8+0.1;
-    // c = (1-getParameterValue(PARAMETER_C))*0.004+0.0001;
-    // b = getParameterValue(PARAMETER_B)*0.004+0.0001;
-    // d = (1-getParameterValue(PARAMETER_B))*1.8+0.1;
-    // a += getParameterValue(PARAMETER_D) ;
+    step = getParameterValue(PARAMETER_A);
+    step = step * step * step * 3;
+    migration = getParameterValue(PARAMETER_B) * getParameterValue(PARAMETER_B) * 200.0;
+    a = getParameterValue(PARAMETER_C)*0.8+0.1;
+    c = (1-getParameterValue(PARAMETER_C))*0.004+0.0001;
+    b = getParameterValue(PARAMETER_D)*0.004+0.0001;
+    d = (1-getParameterValue(PARAMETER_D))*1.8+0.1;
 
-    a = getParameterValue(PARAMETER_A)*1.8+0.01;
-    b = getParameterValue(PARAMETER_B)*0.004+0.0001;
-    c = getParameterValue(PARAMETER_C)*0.004+0.0001;
-    d = getParameterValue(PARAMETER_D)*1.8+0.001;
+    // a = getParameterValue(PARAMETER_A)*1.8+0.01;
+    // b = getParameterValue(PARAMETER_B)*0.004+0.0001;
+    // c = getParameterValue(PARAMETER_C)*0.004+0.0001;
+    // d = getParameterValue(PARAMETER_D)*1.8+0.001;
 
     if(isButtonPressed(PUSHBUTTON))
       reset();
 
     int size = buffer.getSize();
-    float* left = buffer.getSamples(0);
-    float* right = buffer.getSamples(1);
-    // step = getParameterValue(PARAMETER_A)*.6;
-
+    float* rabbits = buffer.getSamples(0);
+    float* foxes = buffer.getSamples(1);
     const float xgain = 2.0/1000.;
     const float ygain = 2.0/1000.;
     float dx, dy;
     for(int i=0; i<size; i++){
-      left[i] = x0 * xgain - 1.0;
-      right[i] = y0 * ygain - 1.0;
-      dx = dxdt(x0, y0);
-      dy = dydt(x0, y0);
-      x0 += step*dx;
-      y0 += step*dy;
-      // prevent exctinction
-      x0 = max(10, x0);
-      y0 = max(10, y0);
-      // left[i] = dx;
-      // right[i] = dy;
+      dx = dxdt(x, y);
+      dy = dydt(x, y);
+      x += step*dx + migration*rabbits[i];
+      y += step*dy + migration*foxes[i];
+      // prevent extinction
+      x = max(minpop, x);
+      y = max(minpop, y);
+      rabbits[i] = x * xgain - 1.0; // centre around 0.0
+      foxes[i] = y * ygain - 1.0;
     }
-    debugMessage("x/y", x0, y0);
-    // debugMessage("dx/dy", dx, dy);
-    // debugMessage("xgain/xavg", xgain, xavg);
-    // debugMessage("x/y", x0, y0);
   }
 
   float dxdt(float x, float y){
