@@ -32,8 +32,8 @@ public:
   LotkaVolterraPatch(){
     registerParameter(PARAMETER_A, "Time");
     registerParameter(PARAMETER_B, "Migration");
-    registerParameter(PARAMETER_C, "Rabbit/Fox +");
-    registerParameter(PARAMETER_D, "Rabbit/Fox -");
+    registerParameter(PARAMETER_C, "Birth");
+    registerParameter(PARAMETER_D, "Death");
     x = (1-0.2)*1000;
     y = 0.2*1000;
   }
