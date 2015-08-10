@@ -34,17 +34,8 @@ public:
     registerParameter(PARAMETER_B, "Migration");
     registerParameter(PARAMETER_C, "Rabbit/Fox +");
     registerParameter(PARAMETER_D, "Rabbit/Fox -");
-    // registerParameter(PARAMETER_A, "Rabbit +");
-    // registerParameter(PARAMETER_B, "Rabbit -");
-    // registerParameter(PARAMETER_C, "Fox +");
-    // registerParameter(PARAMETER_D, "Fox -");
-    reset();
-  }
-
-  void reset(){
     x = (1-0.2)*1000;
     y = 0.2*1000;
-    setButton(PUSHBUTTON, false);
   }
 
   void processAudio(AudioBuffer &buffer){
@@ -55,15 +46,6 @@ public:
     c = (1-getParameterValue(PARAMETER_C))*0.004+0.0001;
     b = getParameterValue(PARAMETER_D)*0.004+0.0001;
     d = (1-getParameterValue(PARAMETER_D))*1.8+0.1;
-
-    // a = getParameterValue(PARAMETER_A)*1.8+0.01;
-    // b = getParameterValue(PARAMETER_B)*0.004+0.0001;
-    // c = getParameterValue(PARAMETER_C)*0.004+0.0001;
-    // d = getParameterValue(PARAMETER_D)*1.8+0.001;
-
-    if(isButtonPressed(PUSHBUTTON))
-      reset();
-
     int size = buffer.getSize();
     float* rabbits = buffer.getSamples(0);
     float* foxes = buffer.getSamples(1);
